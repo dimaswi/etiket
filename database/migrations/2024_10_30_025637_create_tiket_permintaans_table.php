@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kotak_sarans', function (Blueprint $table) {
+        Schema::create('tiket_permintaans', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('nama');
-            $table->string('nomor');
-            $table->string('email');
-            $table->text('pesan');
+            $table->string('permintaan_id');
+            $table->integer('worker');
+            $table->integer('pemberi');
+            $table->string('masukan');
+            $table->integer('status')->default(0);
+            $table->date('jam_mulai')->nullable();
+            $table->date('jam_selesai')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kotak_sarans');
+        Schema::dropIfExists('tiket_permintaans');
     }
 };

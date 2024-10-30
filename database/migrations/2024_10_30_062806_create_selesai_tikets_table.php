@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kotak_sarans', function (Blueprint $table) {
+        Schema::create('selesai_tikets', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('nama');
-            $table->string('nomor');
-            $table->string('email');
-            $table->text('pesan');
+            $table->string('kotak_saran_id');
+            $table->string('tiket_id');
+            $table->string('worker');
+            $table->string('pesan');
+            $table->string('lampiran')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kotak_sarans');
+        Schema::dropIfExists('selesai_tikets');
     }
 };

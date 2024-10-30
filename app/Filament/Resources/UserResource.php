@@ -46,6 +46,9 @@ class UserResource extends Resource
                         ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
                         ->hiddenOn('edit')
                         ->columnSpanFull(),
+                    Forms\Components\CheckboxList::make('roles')
+                        ->relationship('roles', 'name')
+                        ->searchable()
                 ])->columns(2)
             ]);
     }
@@ -53,7 +56,7 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordUrl(fn () => null)
+            ->recordUrl(fn() => null)
             ->columns([
                 TextColumn::make('name')
                     ->label('Nama Karyawan')

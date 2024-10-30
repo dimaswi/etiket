@@ -2,20 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\KotakSaranResource\Pages;
-use App\Filament\Resources\KotakSaranResource\RelationManagers;
-use App\Models\KotakSaran;
+use App\Filament\Resources\PermintaanResource\Pages;
+use App\Filament\Resources\PermintaanResource\RelationManagers;
+use App\Models\Permintaan;
 use Filament\Forms;
+use Filament\Forms\Components\Card;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Infolists\Components\Card;
+use Filament\Infolists\Components\Card as ComponentsCard;
 use Filament\Infolists\Components\IconEntry;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -23,17 +25,17 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class KotakSaranResource extends Resource
+class PermintaanResource extends Resource
 {
-    protected static ?string $model = KotakSaran::class;
+    protected static ?string $model = Permintaan::class;
 
-    protected static ?string $navigationLabel = 'Kotak Saran';
+    protected static ?string $navigationLabel = 'Permintaan Unit';
 
     protected static ?string $navigationGroup = 'Main';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 3;
 
-    protected static ?string $navigationIcon = 'heroicon-o-inbox-arrow-down';
+    protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
     public static function getNavigationBadge(): ?string
     {
@@ -49,22 +51,29 @@ class KotakSaranResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Card::make()->schema([
+                    TextInput::make('subjek')
+                        ->required()
+                        ->placeholder('Masukan Subjek'),
+                    RichEditor::make('pesan')
+                        ->required()
+                        ->placeholder('Masukan Pesan'),
+                    FileUpload::make('lampiran')
+                        ->image()
+                        ->directory('lampiran-permintaan')
+                ])
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->recordUrl(
-                fn(KotakSaran $record): string => Pages\ViewKotakSaran::getUrl([$record->id]),
-            )
             ->columns([
-                TextColumn::make('nama')
+                TextColumn::make('peminta.name')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('pesan')
-                    ->limit(25),
+                TextColumn::make('subjek')
+                    ->searchable(),
                 IconColumn::make('status')
                     ->icon(fn(string $state): string => match ($state) {
                         '0' => 'heroicon-o-x-circle',
@@ -79,8 +88,9 @@ class KotakSaranResource extends Resource
                     })
                     ->alignCenter(),
                 TextColumn::make('created_at')
-                    ->since()
+                    ->label('Dibuat')
                     ->sortable()
+                    ->since()
                     ->badge(),
             ])
             ->filters([
@@ -89,26 +99,6 @@ class KotakSaranResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
-                    Action::make('proses')
-                        ->icon('heroicon-o-clock')
-                        ->color('warning')
-                        ->slideOver()
-                        ->stickyModalFooter()
-                        ->modalSubmitAction(false)
-                        ->infolist([
-                            RepeatableEntry::make('tolak')->label('')
-                                ->schema([
-                                    Section::make('Alasan Penolakan')
-                                        ->schema([
-                                            TextEntry::make('user.name')->label('Nama')->badge(),
-                                            TextEntry::make('created_at')->label('Waktu')->since()->badge(),
-                                            TextEntry::make('alasan')->label('Alasan')->html()->columnSpanFull(),
-                                        ])->columns(2)
-                                        ->footerActions([
-
-                                        ])
-                                ])
-                        ]),
                 ])
             ])
             ->bulkActions([
@@ -122,24 +112,24 @@ class KotakSaranResource extends Resource
     {
         return $infolist
             ->schema([
-                Card::make()->schema([
-                    TextEntry::make('nama'),
+                ComponentsCard::make()->schema([
+                    TextEntry::make('peminta.name'),
                     TextEntry::make('created_at')->badge()->date(),
                     IconEntry::make('status')
                         ->icon(fn(string $state): string => match ($state) {
                             '0' => 'heroicon-o-x-circle',
                             '1' => 'heroicon-o-clock',
-                            '100' => 'heroicon-o-check-circle',
+                            '2' => 'heroicon-o-check-circle',
                         })
                         ->color(fn(string $state): string => match ($state) {
                             '0' => 'danger',
                             '1' => 'warning',
-                            '100' => 'success',
+                            '2' => 'success',
                             default => 'gray',
                         }),
-                    TextEntry::make('nomor'),
-                    TextEntry::make('email'),
-                    TextEntry::make('pesan')->columnSpanFull(),
+                    TextEntry::make('subjek'),
+                    TextEntry::make('pesan')->columnSpanFull()->html(),
+                    ImageEntry::make('lampiran')->columnSpanFull()
                 ])->columns(3)
             ]);
     }
@@ -154,10 +144,10 @@ class KotakSaranResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListKotakSarans::route('/'),
-            'create' => Pages\CreateKotakSaran::route('/create'),
-            'view' => Pages\ViewKotakSaran::route('/{record}'),
-            'edit' => Pages\EditKotakSaran::route('/{record}/edit'),
+            'index' => Pages\ListPermintaans::route('/'),
+            'create' => Pages\CreatePermintaan::route('/create'),
+            'view' => Pages\ViewPermintaan::route('/{record}'),
+            'edit' => Pages\EditPermintaan::route('/{record}/edit'),
         ];
     }
 }

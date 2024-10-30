@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kotak_sarans', function (Blueprint $table) {
+        Schema::create('permintaans', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('nama');
-            $table->string('nomor');
-            $table->string('email');
+            $table->string('pemohon');
+            $table->string('subjek');
             $table->text('pesan');
+            $table->string('lampiran')->nullable();
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kotak_sarans');
+        Schema::dropIfExists('permintaans');
     }
 };

@@ -11,6 +11,7 @@ use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Actions\Action as ActionsAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 
@@ -40,14 +41,25 @@ class ViewKotakSaran extends ViewRecord
                         'kotak_sarans_id' => $record->id,
                         'masukan' => $data['masukan'],
                         'worker' => $data['worker'],
+                        'pemberi' => auth()->user()->id,
                     ]);
 
                     $record->update(['status' => 1]);
 
+                    $worker = User::where('id', $data['worker'])->first();
+
                     Notification::make()
-                        ->title('Tiket sudah dikirim ke worker!')
+                        ->title('Permintaan berhasil dikirim!')
                         ->success()
                         ->send();
+
+                    Notification::make()
+                        ->title('Permintaan pekerjaan baru masuk!')
+                        ->warning()
+                        ->body($record->pesan)
+                        ->sendToDatabase($worker)
+                        ->broadcast($worker);
+
                 })->hidden( fn (KotakSaran $record) => $record->status > 0 ),
             Action::make('Kembali')
                 ->action(function () {

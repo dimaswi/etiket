@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('kotak_sarans_id');
             $table->string('masukan');
+            $table->string('pemberi');
             $table->string('worker');
             $table->string('status')->default(0);
             $table->string('jam_mulai');

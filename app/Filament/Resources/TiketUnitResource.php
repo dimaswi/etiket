@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TiketResource\Pages;
-use App\Filament\Resources\TiketResource\RelationManagers;
-use App\Models\KotakSaran;
-use App\Models\SelesaiTiket;
-use App\Models\Tiket;
-use App\Models\TolakTiket;
+use App\Filament\Resources\TiketUnitResource\Pages;
+use App\Filament\Resources\TiketUnitResource\RelationManagers;
+use App\Models\Permintaan;
+use App\Models\SelesaiPermintaan;
+use App\Models\TiketPermintaan;
+use App\Models\TiketUnit;
+use App\Models\TolakPermintaan;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -24,26 +25,26 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class TiketResource extends Resource
+class TiketUnitResource extends Resource
 {
-    protected static ?string $model = Tiket::class;
+    protected static ?string $model = TiketPermintaan::class;
 
-    protected static ?string $navigationLabel = 'Tiket Umum';
+    protected static ?string $navigationLabel = 'Tiket Unit';
 
     protected static ?string $navigationGroup = 'Main';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('status', 0)->where('worker', auth()->user()->id)->count();
+        return static::getModel()::where('status', 0)->count();
     }
 
     public static function getNavigationBadgeColor(): ?string
     {
-        return static::getModel()::where('status', 0)->where('worker', auth()->user()->id)->count() > 0 ? 'danger' : 'primary';
+        return static::getModel()::where('status', 0)->count() > 0 ? 'danger' : 'primary';
     }
 
     public static function form(Form $form): Form
@@ -61,16 +62,10 @@ class TiketResource extends Resource
 
                 return $query->where('worker', auth()->user()->id);
             })
-            ->recordUrl(
-                fn(Tiket $record): string => Pages\ViewTiket::getUrl([$record->id]),
-            )
             ->columns([
-                TextColumn::make('kotakSaran.nama')
-                    ->label('Pemohon')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('masukan')
-                    ->limit(25),
+                TextColumn::make('permintaan.subjek')->searchable()->sortable(),
+                TextColumn::make('masukan')->searchable()->sortable(),
+                TextColumn::make('pemberi_permintaan.name')->searchable()->sortable(),
                 IconColumn::make('status')
                     ->icon(fn(string $state): string => match ($state) {
                         '0' => 'heroicon-o-x-circle',
@@ -90,7 +85,6 @@ class TiketResource extends Resource
                     ->badge()
                     ->since()
                     ->sortable(),
-
             ])
             ->filters([
                 //
@@ -100,7 +94,7 @@ class TiketResource extends Resource
                     ->label('Terima')
                     ->color('primary')
                     ->icon('heroicon-o-check-circle')
-                    ->action(function (Tiket $record) {
+                    ->action(function (TiketPermintaan $record) {
                         try {
                             $record->update([
                                 'status' => 1,
@@ -118,7 +112,7 @@ class TiketResource extends Resource
                                 ->send();
                         }
                     })
-                    ->visible(function (Tiket $record) {
+                    ->visible(function (TiketPermintaan $record) {
                         return $record->status == 0;
                     }),
                 Action::make('tolak')
@@ -130,18 +124,18 @@ class TiketResource extends Resource
                             ->label('Alasan')
                             ->required(),
                     ])
-                    ->action(function (array $data, Tiket $record) {
+                    ->action(function (array $data, TiketPermintaan $record) {
                         try {
                             $record->update(['status' => 99]);
 
-                            TolakTiket::create([
-                                'kotak_saran_id' => $record->kotak_sarans_id,
-                                'tiket_id' => $record->id,
+                            TolakPermintaan::create([
+                                'permintaan_id' => $record->permintaan_id,
+                                'tiket_unit_id' => $record->id,
                                 'worker' => $record->worker,
                                 'alasan' => $data['alasan']
                             ]);
 
-                            KotakSaran::where('id', $record->kotak_sarans_id)->update([
+                            Permintaan::where('id', $record->permintaan_id)->update([
                                 'status' => 0
                             ]);
 
@@ -156,7 +150,7 @@ class TiketResource extends Resource
                                 ->send();
                         }
                     })
-                    ->visible(function (Tiket $record) {
+                    ->visible(function (TiketPermintaan $record) {
                         return $record->status == 0;
                     }),
                 Action::make('selesai')
@@ -169,40 +163,40 @@ class TiketResource extends Resource
                             ->required(),
                         FileUpload::make('lampiran')
                             ->label('Lampiran')
-                            ->directory('selesai-kotak-saran')
+                            ->directory('selesai-permintaan')
                             ->image()
                     ])
-                    ->action(function (array $data,Tiket $record) {
+                    ->action(function (array $data, TiketPermintaan $record) {
                         try {
                             $record->update([
                                 'status' => 100,
                                 'jam_selesai' => Carbon::now('Asia/Jakarta')
                             ]);
 
-                            KotakSaran::where('id', $record->kotak_sarans_id)->update([
+                            Permintaan::where('id', $record->permintaan_id)->update([
                                 'status' => 100
                             ]);
 
-                            SelesaiTiket::create([
-                                'kotak_saran_id' => $record->kotak_sarans_id,
-                                'tiket_id' => $record->id,
+                            SelesaiPermintaan::create([
+                                'permintaan_id' => $record->permintaan_id,
+                                'tiket_unit_id' => $record->id,
                                 'worker' => $record->worker,
                                 'pesan' => $data['pesan'],
                                 'lampiran' => $data['lampiran'],
                             ]);
 
                             Notification::make()
-                                ->title('Berhasil diupdate!')
+                                ->title('Berhasil diselesaikan!')
                                 ->success()
                                 ->send();
                         } catch (\Throwable $th) {
                             Notification::make()
-                                ->title($th->getMessage())
+                                ->title('Gagal diupdate!')
                                 ->danger()
                                 ->send();
                         }
                     })
-                    ->visible(function (Tiket $record) {
+                    ->visible(function (TiketPermintaan $record) {
                         return $record->status == 1;
                     }),
             ])
@@ -223,10 +217,10 @@ class TiketResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTikets::route('/'),
-            'create' => Pages\CreateTiket::route('/create'),
-            'view' => Pages\ViewTiket::route('/{record}'),
-            'edit' => Pages\EditTiket::route('/{record}/edit'),
+            'index' => Pages\ListTiketUnits::route('/'),
+            'create' => Pages\CreateTiketUnit::route('/create'),
+            'view' => Pages\ViewTiketUnit::route('/{record}'),
+            'edit' => Pages\EditTiketUnit::route('/{record}/edit'),
         ];
     }
 }

@@ -5,24 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Tiket extends Model
+class TolakTiket extends Model
 {
     use HasFactory, HasUuids;
 
     protected $fillable = [
-        'kotak_sarans_id',
-        'masukan',
-        'pemberi',
+        'kotak_saran_id',
+        'tiket_id',
+        'alasan',
         'worker',
-        'status',
-        'jam_mulai',
-        'jam_selesai',
-        'tolak',
     ];
 
-    public function kotakSaran()
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(KotakSaran::class, 'kotak_sarans_id');
+        return $this->belongsTo(User::class, 'worker', 'id');
     }
 }
