@@ -13,8 +13,7 @@
 </head>
 
 <body>
-    <div class="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
-
+    <div class="isolate bg-white px-6 py-12 sm:py-18 lg:px-2">
         <div class="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
             aria-hidden="true">
             <div class="relative left-1/2 -z-10 aspect-[1155/678] w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]"
@@ -37,11 +36,18 @@
                 </div>
             @endsession
 
+            @if ($errors->has('g-recaptcha-response'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <span class="block sm:inline"> {{ $errors->first('g-recaptcha-response') }}</span>
+                </div>
+            @endif
+
             @session('error')
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                     <span class="block sm:inline"> {{ $value }}</span>
                 </div>
             @endsession
+
             <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
                 @csrf
                 <div class="sm:col-span-2">
@@ -76,6 +82,7 @@
                 <div class="sm:col-span-2">
                     {!! htmlFormSnippet() !!}
                 </div>
+
             </div>
             <div class="mt-10">
                 <button type="submit"

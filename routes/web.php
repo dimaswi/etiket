@@ -3,6 +3,7 @@
 use App\Models\KotakSaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,9 @@ Route::get('/', function () {
 });
 
 Route::post('/kirim_saran', function (Request $request) {
+    $validator = Validator::make(request()->all(), [
+        'g-recaptcha-response' => 'recaptcha',
+    ])->validate();
 
     try {
         KotakSaran::create([
