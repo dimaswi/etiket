@@ -29,7 +29,7 @@
             <p class="mt-2 text-lg leading-8 text-gray-600">Saran dan masukan anda sangat berarti untuk pengembangan
                 kami.</p>
         </div>
-        <form action="{{ url('/kirim_saran') }}" method="post" class="mx-auto mt-16 max-w-xl sm:mt-20">
+        <form action="{{ url('/kirim_saran') }}" enctype="multipart/form-data" method="post" class="mx-auto mt-16 max-w-xl sm:mt-20">
             @session('success')
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                     <span class="block sm:inline"> {{ $value }}</span>
@@ -76,6 +76,13 @@
                     <div class="mt-2.5">
                         <textarea name="pesan" id="pesan" rows="6" placeholder="Masukan Pesan Anda" required
                             class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+                    </div>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="pesan" class="block text-sm font-semibold leading-6 text-gray-900">Lampiran</label>
+                    <div class="mt-2.5">
+                        <input type="file" name="lampiran" accept="image/png, image/gif, image/jpeg"
+                            class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
 

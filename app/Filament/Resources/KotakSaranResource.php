@@ -160,6 +160,7 @@ class KotakSaranResource extends Resource
                     TextEntry::make('nomor'),
                     TextEntry::make('email'),
                     TextEntry::make('pesan')->columnSpanFull(),
+                    ImageEntry::make('lampiran')->columnSpanFull()->width(1000)->height(1000),
                 ])->columns(3)
             ]);
     }

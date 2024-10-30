@@ -23,6 +23,12 @@ class ViewKotakSaran extends ViewRecord
     {
         return [
             // Actions\EditAction::make(),
+            Action::make('lampiran')
+                ->label('Lihat Lampiran')
+                ->icon('heroicon-o-folder-arrow-down')
+                ->color('success')
+                ->url(fn (KotakSaran $record): string => url('storage'.$record->lampiran))
+                ->openUrlInNewTab(),
             Action::make('Tindak_lanjut')
                 ->label('Tindak Lanjut')
                 ->icon('heroicon-o-chat-bubble-left-right')
@@ -59,8 +65,7 @@ class ViewKotakSaran extends ViewRecord
                         ->body($record->pesan)
                         ->sendToDatabase($worker)
                         ->broadcast($worker);
-
-                })->hidden( fn (KotakSaran $record) => $record->status > 0 ),
+                })->hidden(fn(KotakSaran $record) => $record->status > 0),
             Action::make('Kembali')
                 ->action(function () {
                     return redirect(url('/admin/kotak-sarans'));

@@ -17,6 +17,7 @@ class KotakSaran extends Model
         'email',
         'pesan',
         'status',
+        'lampiran'
     ];
 
     public function tolak(): HasMany

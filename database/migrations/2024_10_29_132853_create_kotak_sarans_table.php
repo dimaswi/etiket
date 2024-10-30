@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nomor');
             $table->string('email');
             $table->text('pesan');
+            $table->string('lampiran');
             $table->timestamps();
         });
     }
