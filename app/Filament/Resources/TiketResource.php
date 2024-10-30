@@ -13,6 +13,11 @@ use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Card;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -210,6 +215,32 @@ class TiketResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Card::make()->schema([
+                    TextEntry::make('kotakSaran.nama')->label('Nama Pengunjung'),
+                    TextEntry::make('created_at')->label('Permintaan dibuat')->badge()->date(),
+                    IconEntry::make('status')->label('Status Permintaan')
+                        ->icon(fn(string $state): string => match ($state) {
+                            '0' => 'heroicon-o-x-circle',
+                            '1' => 'heroicon-o-clock',
+                            '2' => 'heroicon-o-check-circle',
+                        })
+                        ->color(fn(string $state): string => match ($state) {
+                            '0' => 'danger',
+                            '1' => 'warning',
+                            '2' => 'success',
+                            default => 'gray',
+                        }),
+                    TextEntry::make('peminta.name'),
+                    TextEntry::make('masukan')->label('Masukan dari peminta')->columnSpanFull()->html(),
+                    TextEntry::make('kotakSaran.pesan')->label('Pesan dari pengunjung')->columnSpanFull(),
+                ])->columns(3)
             ]);
     }
 

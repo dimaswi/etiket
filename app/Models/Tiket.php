@@ -25,4 +25,9 @@ class Tiket extends Model
     {
         return $this->belongsTo(KotakSaran::class, 'kotak_sarans_id');
     }
+
+    public function peminta()
+    {
+        return $this->belongsTo(User::class, 'pemberi');
+    }
 }

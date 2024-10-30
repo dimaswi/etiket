@@ -23,4 +23,9 @@ class KotakSaran extends Model
     {
         return $this->hasMany(TolakTiket::class, 'kotak_saran_id', 'id');
     }
+
+    public function selesai(): HasMany
+    {
+        return $this->hasMany(SelesaiTiket::class, 'kotak_saran_id', 'id');
+    }
 }

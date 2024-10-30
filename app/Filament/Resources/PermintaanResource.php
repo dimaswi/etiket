@@ -14,10 +14,13 @@ use Filament\Forms\Form;
 use Filament\Infolists\Components\Card as ComponentsCard;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -99,6 +102,45 @@ class PermintaanResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
+                    Action::make('Tolak')
+                        ->label('List Penolakan')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->slideOver()
+                        ->stickyModalFooter()
+                        ->modalSubmitAction(false)
+                        ->infolist([
+                            RepeatableEntry::make('tolak')->label('')
+                                ->schema([
+                                    Section::make('Alasan Penolakan')
+                                        ->schema([
+                                            TextEntry::make('user.name')->label('Nama')->badge(),
+                                            TextEntry::make('created_at')->label('Waktu')->since()->badge(),
+                                            TextEntry::make('alasan')->label('Alasan')->html()->columnSpanFull(),
+                                        ])->columns(2)
+                                        ->footerActions([])
+                                ])
+                        ]),
+                    Action::make('Selesai')
+                        ->label('List Penyelesaian')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->slideOver()
+                        ->stickyModalFooter()
+                        ->modalSubmitAction(false)
+                        ->infolist([
+                            RepeatableEntry::make('selesai')->label('')
+                                ->schema([
+                                    Section::make('List Penyelesaian')
+                                        ->schema([
+                                            TextEntry::make('user.name')->label('Nama')->badge(),
+                                            TextEntry::make('created_at')->label('Waktu')->since()->badge(),
+                                            TextEntry::make('pesan')->label('Pesan')->columnSpanFull(),
+                                            ImageEntry::make('lampiran')->columnSpanFull()
+                                        ])->columns(2)
+                                        ->footerActions([])
+                                ])
+                        ]),
                 ])
             ])
             ->bulkActions([

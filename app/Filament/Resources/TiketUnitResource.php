@@ -39,12 +39,12 @@ class TiketUnitResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('status', 0)->count();
+        return static::getModel()::where('status', 0)->where('worker', auth()->user()->id)->count();
     }
 
     public static function getNavigationBadgeColor(): ?string
     {
-        return static::getModel()::where('status', 0)->count() > 0 ? 'danger' : 'primary';
+        return static::getModel()::where('status', 0)->where('worker', auth()->user()->id)->count() > 0 ? 'danger' : 'primary';
     }
 
     public static function form(Form $form): Form
@@ -107,6 +107,7 @@ class TiketUnitResource extends Resource
                                 ->send();
                         } catch (\Throwable $th) {
                             Notification::make()
+                                // ->title($th->getMessage())
                                 ->title('Gagal diupdate!')
                                 ->danger()
                                 ->send();
@@ -126,7 +127,7 @@ class TiketUnitResource extends Resource
                     ])
                     ->action(function (array $data, TiketPermintaan $record) {
                         try {
-                            $record->update(['status' => 99]);
+                            // dd($record);
 
                             TolakPermintaan::create([
                                 'permintaan_id' => $record->permintaan_id,
@@ -139,13 +140,16 @@ class TiketUnitResource extends Resource
                                 'status' => 0
                             ]);
 
+                            $record->update(['status' => 99]);
+
                             Notification::make()
                                 ->title('Berhasil diupdate!')
                                 ->success()
                                 ->send();
                         } catch (\Throwable $th) {
                             Notification::make()
-                                ->title('Gagal diupdate!')
+                                ->title($th->getMessage())
+                                // ->title('Gagal diupdate!')
                                 ->danger()
                                 ->send();
                         }
