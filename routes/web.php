@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\KotakSaran;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +16,22 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('kotak_saran');
 });
+
+Route::post('/kirim_saran', function (Request $request) {
+
+    try {
+        KotakSaran::create([
+            'nama' => $request->nama,
+            'nomor' => $request->nomor,
+            'email' => $request->email,
+            'pesan' => $request->pesan,
+        ]);
+
+        return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
+    } catch (\Throwable $th) {
+
+        return redirect()->back()->with('error', 'Masih ada data yang belum diisi!');
+    }
+})->name('kirim_saran');
