@@ -29,6 +29,15 @@ Route::post('/kirim_saran', function (Request $request) {
     if ($request->lampiran != null) {
         $imageName = time() . '.' . $request->lampiran->extension();
         $request->lampiran->move(storage_path('app/public/lampiran-kotak-saran'), $imageName);
+
+        KotakSaran::create([
+            'nama' => $request->nama,
+            'nomor' => $request->nomor,
+            'email' => $request->email,
+            'pesan' => $request->pesan,
+        ]);
+
+        return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
     }
 
     try {
@@ -37,13 +46,12 @@ Route::post('/kirim_saran', function (Request $request) {
             'nomor' => $request->nomor,
             'email' => $request->email,
             'pesan' => $request->pesan,
-            'lampiran' => '/lampiran-kotak-saran/' . $imageName,
         ]);
 
         return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
     } catch (\Throwable $th) {
 
-        // return redirect()->back()->with('error', $th->getMessage());
-        return redirect()->back()->with('error', 'Masih ada data yang belum diisi!');
+        return redirect()->back()->with('error', $th->getMessage());
+        // return redirect()->back()->with('error', 'Masih ada data yang belum diisi!');
     }
 })->name('kirim_saran');
