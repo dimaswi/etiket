@@ -39,20 +39,20 @@ Route::post('/kirim_saran', function (Request $request) {
         ]);
 
         return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
-    }
+    } else {
+        try {
+            KotakSaran::create([
+                'nama' => $request->nama,
+                'nomor' => $request->nomor,
+                'email' => $request->email,
+                'pesan' => $request->pesan,
+            ]);
 
-    try {
-        KotakSaran::create([
-            'nama' => $request->nama,
-            'nomor' => $request->nomor,
-            'email' => $request->email,
-            'pesan' => $request->pesan,
-        ]);
+            return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
+        } catch (\Throwable $th) {
 
-        return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
-    } catch (\Throwable $th) {
-
-        // return redirect()->back()->with('error', $th->getMessage());
-        return redirect()->back()->with('error', 'Masih ada data yang belum diisi!');
+            // return redirect()->back()->with('error', $th->getMessage());
+            return redirect()->back()->with('error', 'Masih ada data yang belum diisi!');
+        }
     }
 })->name('kirim_saran');
