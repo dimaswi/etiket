@@ -26,9 +26,10 @@ Route::post('/kirim_saran', function (Request $request) {
         'g-recaptcha-response' => 'recaptcha',
     ])->validate();
 
-    $imageName = time() . '.' . $request->lampiran->extension();
-
-    $request->lampiran->move(storage_path('app/public/lampiran-kotak-saran'), $imageName);
+    if ($request->lampiran != null) {
+        $imageName = time() . '.' . $request->lampiran->extension();
+        $request->lampiran->move(storage_path('app/public/lampiran-kotak-saran'), $imageName);
+    }
 
     try {
         KotakSaran::create([
@@ -36,7 +37,7 @@ Route::post('/kirim_saran', function (Request $request) {
             'nomor' => $request->nomor,
             'email' => $request->email,
             'pesan' => $request->pesan,
-            'lampiran' => '/lampiran-kotak-saran/'.$imageName,
+            'lampiran' => '/lampiran-kotak-saran/' . $imageName,
         ]);
 
         return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
