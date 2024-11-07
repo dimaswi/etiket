@@ -38,7 +38,7 @@ Route::post('/kirim_saran', function (Request $request) {
             'lampiran' => '/lampiran-kotak-saran/' . $imageName,
         ]);
 
-        return redirect()->back()->with('success', 'Saran Anda berhasil dikirim! dengan lampiran');
+        return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
     } else {
         try {
             KotakSaran::create([
@@ -48,7 +48,7 @@ Route::post('/kirim_saran', function (Request $request) {
                 'pesan' => $request->pesan,
             ]);
 
-            return redirect()->back()->with('success', 'Saran Anda berhasil dikirim! tanpa lampiran');
+            return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
         } catch (\Throwable $th) {
 
             // return redirect()->back()->with('error', $th->getMessage());
