@@ -35,6 +35,7 @@ Route::post('/kirim_saran', function (Request $request) {
             'nomor' => $request->nomor,
             'email' => $request->email,
             'pesan' => $request->pesan,
+            'lampiran' => '/lampiran-kotak-saran/' . $imageName,
         ]);
 
         return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
@@ -51,7 +52,7 @@ Route::post('/kirim_saran', function (Request $request) {
         return redirect()->back()->with('success', 'Saran Anda berhasil dikirim!');
     } catch (\Throwable $th) {
 
-        return redirect()->back()->with('error', $th->getMessage());
-        // return redirect()->back()->with('error', 'Masih ada data yang belum diisi!');
+        // return redirect()->back()->with('error', $th->getMessage());
+        return redirect()->back()->with('error', 'Masih ada data yang belum diisi!');
     }
 })->name('kirim_saran');
